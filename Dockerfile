@@ -1,14 +1,24 @@
-FROM alpine:latest
+FROM buluma/centos:systemd
 
 # set maintainer
 LABEL maintainer "me@buluma.me.ke"
 LABEL build_date="2022-05-22"
 
-RUN apk update && \
-    apk upgrade 
-RUN apk add openjdk8-jre
-
-RUN apk add gcc git-core python3-devel python3-libselinux python3-jmespath python3-pip
+# Install requirements.
+RUN yum -y install rpm centos-release dnf-plugins-core \
+ && yum -y update \
+ && yum -y config-manager --set-enabled powertools \
+ && yum -y install \
+      epel-release \
+      initscripts \
+      sudo \
+      which \
+      hostname \
+      libyaml-devel \
+      python3 \
+      python3-pip \
+      python3-pyyaml \
+ && yum clean all
 
 ADD requirements.txt /requirements.txt
 RUN python -m pip install -r /requirements.txt
