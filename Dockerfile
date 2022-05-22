@@ -5,6 +5,8 @@ LABEL maintainer "me@buluma.me.ke"
 LABEL build_date="2022-05-22"
 ENV container=docker
 
+RUN dnf -y install openjdk8-jre
+
 ADD requirements.txt /requirements.txt
 RUN python -m pip install -r /requirements.txt
 
