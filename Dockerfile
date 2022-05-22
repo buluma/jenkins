@@ -5,6 +5,8 @@ LABEL maintainer "me@buluma.me.ke"
 LABEL build_date="2022-05-22"
 ENV container=docker
 
+WORKDIR /home/jenkins/agent/workspace
+
 RUN dnf -y install java-11-openjdk-devel
 
 ADD requirements.txt /requirements.txt
