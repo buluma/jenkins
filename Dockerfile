@@ -1,7 +1,17 @@
-FROM ubuntu:latest
+FROM alpine:latest
 
 # set maintainer
 LABEL maintainer "me@buluma.me.ke"
+LABEL build_date="2022-05-22"
+
+RUN apk update && \
+    apk upgrade 
+RUN apk add openjdk8-jre
+
+RUN apk add gcc git-core python3-devel python3-libselinux python3-jmespath python3-pip
+
+ADD requirements.txt /requirements.txt
+RUN python -m pip install -r /requirements.txt
 
 # set a health check
 HEALTHCHECK --interval=5s \
