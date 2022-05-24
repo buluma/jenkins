@@ -7,7 +7,7 @@ ENV container=docker
 
 WORKDIR /home/jenkins/agent
 
-RUN dnf -y install java-11-openjdk-devel
+RUN dnf -y install java-11-openjdk-devel git-all make gcc
 
 ADD requirements.txt /requirements.txt
 RUN python -m pip install -r /requirements.txt
