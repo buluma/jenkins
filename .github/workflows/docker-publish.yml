@@ -20,20 +20,6 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  # Test the image builds and works correctly.
-  test:
-    name: Test
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: Test building image.
-        run: docker build -t jenkins .
-
-      - name: Run the built image.
-        run: docker run --name test-container -d --privileged -v /sys/fs/cgroup:/sys/fs/cgroup:ro jenkins
-
   # If on master branch, build and release image.
   release:
     name: Release
