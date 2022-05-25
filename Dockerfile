@@ -9,7 +9,7 @@ WORKDIR /home/jenkins/agent
 
 RUN dnf -y install java-11-openjdk-devel git-all make gcc sudo
 
-RUN sudo dnf remove docker \
+RUN sudo dnf -y remove docker \
                   docker-client \
                   docker-client-latest \
                   docker-common \
@@ -26,7 +26,7 @@ RUN sudo dnf config-manager \
     --add-repo \
     https://download.docker.com/linux/fedora/docker-ce.repo
     
-RUN sudo dnf install docker-ce docker-ce-cli containerd.io docker-compose-plugin
+RUN sudo dnf -y install docker-ce docker-ce-cli containerd.io docker-compose-plugin
 
 ADD requirements.txt /requirements.txt
 RUN python -m pip install -r /requirements.txt
