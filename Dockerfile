@@ -7,8 +7,12 @@ ENV container=docker
 
 WORKDIR /home/jenkins/agent
 
-RUN dnf -y install java-11-openjdk-devel git-all make gcc sudo
+RUN dnf -y install java-11-openjdk-devel git-all make gcc sudo gnupg
 
+ADD requirements.txt /requirements.txt
+RUN python -m pip install -r /requirements.txt
+
+# Setup Docker
 RUN sudo dnf -y remove docker \
                   docker-client \
                   docker-client-latest \
@@ -27,9 +31,6 @@ RUN sudo dnf config-manager \
     https://download.docker.com/linux/fedora/docker-ce.repo
     
 RUN sudo dnf -y install docker-ce docker-ce-cli containerd.io docker-compose-plugin
-
-ADD requirements.txt /requirements.txt
-RUN python -m pip install -r /requirements.txt
 
 # set a health check
 HEALTHCHECK --interval=5s \
