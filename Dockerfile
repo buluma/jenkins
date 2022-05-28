@@ -1,42 +1,65 @@
-FROM buluma/docker-fedora35-ansible
+FROM docker:17.12.1-dind
 
-# set maintainer
-LABEL maintainer "me@buluma.me.ke"
-LABEL build_date="2022-05-22"
-ENV container=docker
+MAINTAINER Michael Buluma <bulumaknight@gmail.com>
 
-WORKDIR /home/jenkins/agent
+# http://bugs.python.org/issue19846
+# > At the moment, setting "LANG=C" on a Linux system *fundamentally breaks Python 3*, and that's not OK.
+ENV ALPINE_EDGE_COMMUNITY_REPO=http://dl-cdn.alpinelinux.org/alpine/edge/community \
+    ALPINE_GLIBC_BASE_URL=https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.23-r2 \
+    ALPINE_GLIBC_PACKAGE=glibc-2.23-r2.apk \
+    ALPINE_GLIBC_BIN_PACKAGE=glibc-bin-2.23-r2.apk \
+    ALPINE_GLIBC_I18N_PACKAGE=glibc-i18n-2.23-r2.apk \
+    ALPINE_GLIBC_RSA_PUB_URL=https://github.com/sgerrand/alpine-pkg-glibc/releases/download/2.23-r2/sgerrand.rsa.pub \
+    JAVA_HOME=/usr/lib/jvm/default-jvm \
+    LANG=en_US.UTF-8 \
+    LANGUAGE=en_US.UTF-8 \
+    LC_ALL=en_US.UTF-8 \
+    SSH_KNOWN_HOSTS=github.com
 
-RUN dnf -y install java-11-openjdk-devel git-all make gcc sudo gnupg
+ENV PATH=${PATH}:${JAVA_HOME}/bin
 
-ADD requirements.txt /requirements.txt
-RUN python -m pip install -r /requirements.txt
+# Please keep each package list in alphabetical order
+RUN apk --update add \
+    bash \
+    bzip2 \
+    ca-certificates \
+    git \
+    glib \
+    jq \
+    less \
+    libsm \
+    libstdc++ \
+    make \
+    openjdk8 \
+    openssh-client \
+    openssl \
+    perl \
+    py-pip \
+    python \
+    python3 \
+    tar \
+    unzip \
+    && cd /tmp \
+    && pip install --upgrade \
+    pip \
+    setuptools \
+    virtualenv \
+    wheel \
+    && apk add --update --repository ${ALPINE_EDGE_COMMUNITY_REPO} tini \
+    && wget -q -O /etc/apk/keys/sgerrand.rsa.pub "${ALPINE_GLIBC_RSA_PUB_URL}" \
+    && wget -q "${ALPINE_GLIBC_BASE_URL}/${ALPINE_GLIBC_PACKAGE}" \
+               "${ALPINE_GLIBC_BASE_URL}/${ALPINE_GLIBC_BIN_PACKAGE}" \
+               "${ALPINE_GLIBC_BASE_URL}/${ALPINE_GLIBC_I18N_PACKAGE}" \
+    && apk add ${ALPINE_GLIBC_PACKAGE} ${ALPINE_GLIBC_BIN_PACKAGE} ${ALPINE_GLIBC_I18N_PACKAGE} \
+    && cd \
+    && rm -rf /tmp/* /var/cache/apk/* \
+    && /usr/glibc-compat/bin/localedef -i en_US -f UTF-8 en_US.UTF-8 \
+    && echo 'export PATH=$PATH:${JAVA_HOME}/bin' >> /etc/profile.d/java.sh \
+    && ssh-keyscan $SSH_KNOWN_HOSTS | tee /etc/ssh/ssh_known_hosts \
+    && echo 'Done'
 
-# Setup Docker
-RUN sudo dnf -y remove docker \
-                  docker-client \
-                  docker-client-latest \
-                  docker-common \
-                  docker-latest \
-                  docker-latest-logrotate \
-                  docker-logrotate \
-                  docker-selinux \
-                  docker-engine-selinux \
-                  docker-engine
+COPY wrapper.sh /usr/local/bin/
+RUN chmod +x /usr/local/bin/wrapper.sh
 
-RUN sudo dnf -y install dnf-plugins-core
-
-RUN sudo dnf config-manager \
-    --add-repo \
-    https://download.docker.com/linux/fedora/docker-ce.repo
-    
-RUN sudo dnf -y install docker-ce docker-ce-cli containerd.io docker-compose-plugin
-
-# set a health check
-HEALTHCHECK --interval=5s \
-            --timeout=5s \
-            CMD curl -f http://127.0.0.1:8000 || exit 1
-
-EXPOSE 8000
-
+ENTRYPOINT []
 CMD []
