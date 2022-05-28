@@ -5,7 +5,7 @@ on:
   pull_request:
   push:
    branches:
-    - master
+    - openjdk-alpine
   schedule:
     - cron: '15 3/5 * * *'
   workflow_dispatch:
@@ -24,7 +24,7 @@ jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/master'
+    if: github.ref == 'refs/heads/openjdk-alpine'
 
     steps:
       - uses: actions/checkout@v2
@@ -52,5 +52,5 @@ jobs:
           platforms: linux/amd64,linux/arm64/v8
           push: true
           tags: |
-            buluma/jenkins:latest, buluma/jenkins:1.0.0
-            ghcr.io/${{ github.repository }}:latest, ghcr.io/${{ github.repository }}:1.0.0
+            buluma/jenkins:8-jdk-alpine
+            ghcr.io/${{ github.repository }}:8-jdk-alpine
