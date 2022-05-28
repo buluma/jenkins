@@ -5,7 +5,7 @@ on:
   pull_request:
   push:
    branches:
-    - master
+    - dind-alpine
   schedule:
     - cron: '15 3/5 * * *'
   workflow_dispatch:
@@ -52,5 +52,5 @@ jobs:
           platforms: linux/amd64,linux/arm64/v8
           push: true
           tags: |
-            buluma/jenkins:latest, buluma/jenkins:1.0.0
-            ghcr.io/${{ github.repository }}:latest, ghcr.io/${{ github.repository }}:1.0.0
+            buluma/jenkins:dind-1.0.0
+            ghcr.io/${{ github.repository }}:dind-1.0.0
