@@ -2,6 +2,8 @@ FROM docker:17.12.1-dind
 
 MAINTAINER Michael Buluma <bulumaknight@gmail.com>
 
+WORKDIR /home/jenkins/agent
+
 # http://bugs.python.org/issue19846
 # > At the moment, setting "LANG=C" on a Linux system *fundamentally breaks Python 3*, and that's not OK.
 ENV ALPINE_EDGE_COMMUNITY_REPO=http://dl-cdn.alpinelinux.org/alpine/edge/community \
