@@ -3,6 +3,8 @@ FROM openjdk:8-jdk-alpine
 
 USER root
 
+WORKDIR /home/jenkins/agent
+
 # Update and upgrade apk then install curl, maven, git, and nodejs
 RUN apk update && \
 	apk upgrade && \
